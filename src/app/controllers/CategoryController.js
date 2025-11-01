@@ -43,66 +43,59 @@ class CategoryController {
     return response.status(200).json(categories);
   }
 
-  // async update(request, response) {
-  //   // const schema = Yup.object({
-  //   //   name: Yup.string(),
-  //   // });
+  async update(request, response) {
+    const schema = Yup.object({
+      name: Yup.string(),
+    });
 
-  //   // try {
-  //   //   schema.validateSync(request.body, { abortEarly: false });
-  //   // } catch (err) {
-  //   //   return response.status(400).json({ error: err.errors });
-  //   // }
+    try {
+      schema.validateSync(request.body, { abortEarly: false });
+    } catch (err) {
+      return response.status(400).json({ error: err.errors });
+    }
 
-  //   // const { admin: isAdmin } = await User.findByPk(request.userId);
+    const { id } = request.params;
 
-  //   // if (!isAdmin) {
-  //   //   return response.status(401).json();
-  //   // }
+    const categoryExists = await Category.findByPk(id);
 
-  //   // const { id } = request.params;
+    if (!categoryExists) {
+      return response
+        .status(400)
+        .json({ message: 'Make sure your category ID is correct' });
+    }
 
-  //   // const categoryExists = await Category.findByPk(id);
+    let path;
+    if (request.file) {
+      const { filename } = request.file;
+      path = filename;
+    }
 
-  //   // if (!categoryExists) {
-  //   //   return response
-  //   //     .status(400)
-  //   //     .json({ message: 'Make sure your category ID is correct' });
-  //   // }
+    const { name } = request.body;
 
-  //   // let path;
-  //   // if (request.file) {
-  //   //   path = request.file.filename;
-  //   // }
+    const existingCategory = await Category.findOne({
+      where: {
+        name,
+      },
+    });
 
-  //   // const { name } = request.body;
+    if (existingCategory) {
+      return response.status(400).json({ error: 'Category already exists' });
+    }
 
-  //   // if (name) {
-  //   //   const categoryNameExists = await Category.findOne({
-  //   //     where: {
-  //   //       name,
-  //   //     },
-  //   //   });
+   await Category.update(
+      {
+        name,
+        path,
+      },
+      {
+        where: {
+          id,
+        },
+      },
+    );
 
-  //   //   if (categoryNameExists && categoryNameExists.id !== +id) {
-  //   //     return response.status(400).json({ error: 'Category already exists' });
-  //   //   }
-  //   }
-
-  //   await Category.update(
-  // //     {
-  // //       name,
-  // //       path,
-  // //     },
-  // //     {
-  // //       where: {
-  // //         id,
-  // //       },
-  // //     },
-  // //   );
-
-  // //   return response.status(200).json();
-  // }
+    return response.status(201).json();
+  }
 }
 
 export default new CategoryController();
