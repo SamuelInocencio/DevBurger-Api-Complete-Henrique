@@ -53,24 +53,22 @@ class CategoryController {
     } catch (err) {
       return response.status(400).json({ error: err.errors });
     }
-
+    const { name } = request.body;
     const { id } = request.params;
 
-    const categoryExists = await Category.findByPk(id);
+    // const categoryExists = await Category.findByPk(id);
 
-    if (!categoryExists) {
-      return response
-        .status(400)
-        .json({ message: 'Make sure your category ID is correct' });
-    }
+    // if (!categoryExists) {
+    //   return response
+    //     .status(400)
+    //     .json({ message: 'Make sure your category ID is correct' });
+    // }
 
     let path;
     if (request.file) {
       const { filename } = request.file;
       path = filename;
     }
-
-    const { name } = request.body;
 
     const existingCategory = await Category.findOne({
       where: {
@@ -82,7 +80,7 @@ class CategoryController {
       return response.status(400).json({ error: 'Category already exists' });
     }
 
-   await Category.update(
+    await Category.update(
       {
         name,
         path,
