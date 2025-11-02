@@ -1,7 +1,6 @@
 import * as Yup from 'yup';
 
 import Category from '../models/Category.js';
-import User from '../models/User.js';
 
 class CategoryController {
   async store(request, response) {
@@ -55,14 +54,6 @@ class CategoryController {
     }
     const { name } = request.body;
     const { id } = request.params;
-
-    // const categoryExists = await Category.findByPk(id);
-
-    // if (!categoryExists) {
-    //   return response
-    //     .status(400)
-    //     .json({ message: 'Make sure your category ID is correct' });
-    // }
 
     let path;
     if (request.file) {

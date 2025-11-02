@@ -53,7 +53,7 @@ class ProductController {
     const { name, price, category_id, offer } = request.body;
     const { id } = request.params;
 
-    const updatedProduct = await Product.update(
+    await Product.update(
       {
         name,
         price,
@@ -81,9 +81,6 @@ class ProductController {
         },
       ],
     });
-
-    console.log({ userId: request.userId });
-    console.log({ userId: request.userName });
 
     return response.json(products);
   }

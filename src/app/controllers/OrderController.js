@@ -42,7 +42,7 @@ class OrderController {
     });
 
     const mapedProducts = findedProducts.map((product) => {
-     const quantity = products.find((p) => p.id === product.id).quantity;
+      const quantity = products.find((p) => p.id === product.id).quantity;
 
       const newProduct = {
         id: product.id,
@@ -65,16 +65,10 @@ class OrderController {
       status: 'Pedido Realizado!',
     };
 
-    const createdOrder = await Order.create(order);
+    const newOrder = await Order.create(order);
 
-    return response.status(201).json(createdOrder);
-  }
-
-  async index(request, response) {
-    const orders = await Order.find();
-
-    return response.json(orders);
-  }
+    return response.status(201).json(newOrder);
+  }  
 
   async update(request, response) {
     const schema = Yup.object({
@@ -87,14 +81,8 @@ class OrderController {
       return response.status(400).json({ error: err.errors });
     }
 
-    const { admin: isAdmin } = await User.findByPk(request.userId);
-
-    if (!isAdmin) {
-      return response.status(401).json();
-    }
-
-    const { id } = request.params;
     const { status } = request.body;
+    const { id } = request.params;
 
     try {
       await Order.updateOne({ _id: id }, { status });
@@ -103,6 +91,12 @@ class OrderController {
     }
 
     return response.json({ message: 'Status updated sucessfully' });
+  }
+
+  async index(_request, response) {
+    const orders = await Order.find();
+
+    return response.status(200).json(orders);
   }
 }
 
