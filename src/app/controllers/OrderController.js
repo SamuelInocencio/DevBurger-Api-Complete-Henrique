@@ -18,16 +18,17 @@ class OrderController {
     });
 
     try {
-      schema.validateSync(request.body, { abortEarly: false });
+      schema.validateSync(request.body, { abortEarly: false, strict: true });
     } catch (err) {
       return response.status(400).json({ error: err.errors });
     }
 
+    const { userId, userName } = request;
     const { products } = request.body;
 
     const productsIds = products.map((product) => product.id);
 
-    const findProducts = await Product.findAll({
+    const findedProducts = await Product.findAll({
       where: {
         id: productsIds,
       },
@@ -40,16 +41,16 @@ class OrderController {
       ],
     });
 
-    const formattedProducts = findProducts.map((product) => {
-      const productIndex = products.findIndex((item) => item.id === product.id);
+    const mapedProducts = findedProducts.map((product) => {
+     const quantity = products.find((p) => p.id === product.id).quantity;
 
       const newProduct = {
         id: product.id,
         name: product.name,
-        category: product.category.name,
         price: product.price,
         url: product.url,
-        quantity: products[productIndex].quantity,
+        category: product.category.name,
+        quantity,
       };
 
       return newProduct;
@@ -57,10 +58,10 @@ class OrderController {
 
     const order = {
       user: {
-        id: request.userId,
-        name: request.userName,
+        id: userId,
+        name: userName,
       },
-      products: formattedProducts,
+      products: mapedProducts,
       status: 'Pedido Realizado!',
     };
 
