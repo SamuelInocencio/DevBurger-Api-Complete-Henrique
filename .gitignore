@@ -31,3 +31,6 @@ Thumbs.db
 
 # Uploads de Imagens
 uploads
+
+#Docker
+Dockerfile
